@@ -1,20 +1,18 @@
 package ru.boiko.se;
 
-import java.util.concurrent.CountDownLatch;
 
 public class Road extends Stage {
-    private final CountDownLatch countDownLatch;
-    public Road(int length, CountDownLatch countDownLatch) {
-        this.countDownLatch = countDownLatch;
+    public Road(int length) {
         this.length = length;
         this.description = "Дорога " + length + " метров";
     }
+
     @Override
-    public void go(Car c) {
+    public void go(final Car car) {
         try {
-            System.out.println(c.getName() + " начал этап: " + description);
-            Thread.sleep(length / c.getSpeed() * 1000);
-            System.out.println(c.getName() + " закончил этап: " + description);
+            System.out.println(car.getName() + " начал этап: " + description);
+            Thread.sleep(length / car.getSpeed() * 1000);
+            System.out.println(car.getName() + " закончил этап: " + description);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
