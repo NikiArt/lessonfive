@@ -2,7 +2,9 @@ package ru.boiko.se;
 
 import lombok.Getter;
 
+import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.CyclicBarrier;
 
 @Getter
 public class Car implements Runnable {
@@ -15,11 +17,13 @@ public class Car implements Runnable {
 
     private final CountDownLatch countDownLatch;
     private final CountDownLatch raceCountDownLatch;
+    private final CyclicBarrier cyclicBarrier;
     private final Race race;
     private final int speed;
     private final String name;
 
-    public Car(final Race race, final int speed, final CountDownLatch countDownLatch, final CountDownLatch raceCountDownLatch, final int all_cars_count) {
+    public Car(final Race race, final int speed, final CountDownLatch countDownLatch, final CountDownLatch raceCountDownLatch, final CyclicBarrier cyclicBarrier, final int all_cars_count) {
+        this.cyclicBarrier = cyclicBarrier;
         this.ALL_CARS_COUNT = all_cars_count;
         this.countDownLatch = countDownLatch;
         this.race = race;
@@ -40,8 +44,8 @@ public class Car implements Runnable {
             e.printStackTrace();
         }
         try {
-            countDownLatch.await();
-        } catch (InterruptedException e) {
+            cyclicBarrier.await();
+        } catch (Exception e) {
             e.printStackTrace();
         }
         for (int i = 0; i < race.getStages().size(); i++) {

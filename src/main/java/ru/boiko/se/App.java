@@ -2,10 +2,7 @@ package ru.boiko.se;
 
 import lombok.SneakyThrows;
 
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Semaphore;
+import java.util.concurrent.*;
 
 /**
  * Домашнее задание к уроку 5
@@ -15,6 +12,7 @@ public class App {
 
     @SneakyThrows
     public static void main(String[] args) {
+        final CyclicBarrier cyclicBarrier = new CyclicBarrier(CARS_COUNT);
         final CountDownLatch startCountDownLatch = new CountDownLatch(CARS_COUNT);
         final CountDownLatch raceCountDownLatch = new CountDownLatch(CARS_COUNT);
         final Semaphore tunnelTraffic = new Semaphore(CARS_COUNT / 2);
@@ -24,7 +22,7 @@ public class App {
         Race race = new Race(new Road(60), new Tunnel(tunnelTraffic), new Road(40));
         Car[] cars = new Car[CARS_COUNT];
         for (int i = 0; i < cars.length; i++) {
-            cars[i] = new Car(race, 20 + (int) (Math.random() * 10), startCountDownLatch, raceCountDownLatch, CARS_COUNT);
+            cars[i] = new Car(race, 20 + (int) (Math.random() * 10), startCountDownLatch, raceCountDownLatch, cyclicBarrier, CARS_COUNT);
         }
         for (Car car : cars) {
             executorService.submit(car);
@@ -33,6 +31,7 @@ public class App {
         System.out.println("ВАЖНОЕ ОБЪЯВЛЕНИЕ >>> Гонка началась!!!");
         raceCountDownLatch.await();
         System.out.println("ВАЖНОЕ ОБЪЯВЛЕНИЕ >>> Гонка закончилась!!!");
+        executorService.shutdown();
     }
 }
 
